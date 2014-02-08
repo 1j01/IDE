@@ -14,9 +14,16 @@
 		});
 		$.each(menuitems,function(i,item){
 			var $item = $("<li class='context-menu-item'/>");
+			$item.css({
+				cursor: "default"
+			});
 			$item.text(item.text);
-			$item.click(item.click);
+			$item.click(function(e){
+				e.preventDefault();
+				item.click();
+			});
 			$item.on("mousedown",function(e){
+				e.preventDefault();
 				e.stopPropagation();
 			});
 			$menu.append($item);

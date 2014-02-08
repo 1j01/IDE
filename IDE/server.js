@@ -29,7 +29,7 @@ GETs = {
 };
 POSTs = {
 	write: function(param, callback){
-		return callback("Save disabled! :)");
+		//return callback("Save disabled! :)");
 		fs.writeFile(param.path, param.content, function(err){
 			if(err){
 				callback("Failed to write "+param.path);

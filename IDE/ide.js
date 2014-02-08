@@ -249,7 +249,7 @@
 			if($(apps).data("loaded")){
 				go();
 			}else{
-				$(apps).on("loaded",go)
+				$(apps).on("loaded",go);
 			}
 			
 			function go(){

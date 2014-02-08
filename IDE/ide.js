@@ -235,9 +235,9 @@
 		$ws.name = ws_def.name;
 		$ws.files = ws_def.files;
 		
-		$ws.openAllFiles = function(){
+		$ws.openAllFiles = function(_app){
 			$.each($ws.files,function(i,file){
-				$ws.openFile(file);
+				$ws.openFile(file, _app);
 			});
 		};
 		
@@ -302,6 +302,29 @@
 				
 				
 				function open_with(app){
+					//app can be an app object or the dirname of an app
+					if(!app){
+						V.error({
+							title: "I tried to open "+file.name+" with... nothing?",
+							message: "I'm confused. :("
+						});
+					}
+					if(!app.open){
+						if(typeof app === "string"){
+							if(!apps[app]){
+								V.error({
+									title: "I tried to open "+file.name+" with... "+app,
+									message: app+" doesn't seem to exist?"
+								});
+							}
+							app = apps[app];
+						}else{
+							V.error({
+								title: "I tried to open "+file.name+" with... "+app,
+								message: "It didn't work so well. :("
+							});
+						}
+					}
 					app.open($ws, file);
 					done = true;
 				}

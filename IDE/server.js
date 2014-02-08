@@ -86,7 +86,7 @@ if(NODE){
 				V.error({title:status,message:error});
 				callback(error);
 			}
-		})
+		});
 	};
 	POST = function(action, data, callback){
 		if(!$.isPlainObject(data)){
@@ -100,7 +100,7 @@ if(NODE){
 			type: "POST",
 			data: JSON.stringify(data),
 			success: function(res){
-				var res = JSON.parse(res);
+				res = JSON.parse(res);
 				callback(res.err, res.resobj);
 			},
 			error: function(xhr,status,error){
@@ -108,7 +108,7 @@ if(NODE){
 				console.debug(xhr);
 				callback(error);
 			}
-		})
+		});
 	};
 }else{
 	//dummy access
@@ -139,23 +139,13 @@ if(NODE){
 		}else{
 			V.error({title:"No server connection.",message:"No write access or anything."});
 		}
-	}
+	};
 }
 
 
 if(NODE){
 	
-	if(global.server){
-		global.server.TERMINATE(function(e){
-			if(e)console.warn(e);
-			//This is a restart, restart the server as well.
-			startServer();
-		});
-	}
-	
-	window.startServer = startServer;
-	
-	function startServer(port){
+	window.startServer = function startServer(port){
 		port = port || 1337;
 		if(port > 65535){
 			return V.error("Port must be less than or equal to <abbr title='16bit unsigned integer'>65535</abbr>.");
@@ -254,11 +244,19 @@ if(NODE){
 					V.error(e);
 				}
 			}
-		};
+		}
 		
 		window.stopServer = stopServer;
 		global.server = server;
 		global.server.TERMINATE = stopServer;
+	};
+	
+	if(global.server){
+		global.server.TERMINATE(function(e){
+			if(e)console.warn(e);
+			//This is a restart, restart the server as well.
+			startServer();
+		});
 	}
 	
 }

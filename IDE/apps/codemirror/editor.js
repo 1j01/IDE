@@ -25,7 +25,7 @@ app.open = function($ws, file){
 	});
 	$tab.on("activate", function(){
 		cm.refresh();
-	})
+	});
 	file.read(function(err, content){
 		cm.setValue(content || err);
 	});

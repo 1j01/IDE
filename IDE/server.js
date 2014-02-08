@@ -20,7 +20,7 @@ GETs = {
 	workspaces: function(callback){
 		callback(null,[{
 			name: "meta",
-			files: ["index.html", "ide.js", "main.css"]
+			files: ["server.js", "index.html", "ide.js", "main.css"]
 		}]);
 	},
 	apps: function(callback){

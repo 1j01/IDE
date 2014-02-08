@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<title>IDE</title>
+		
+		<script src='lib/jquery-2.1.0.min.js'></script>
+		
+		<script>
+			NODE = typeof require !== "undefined";
+			LOCAL = location.protocol === "file:";
+			SERVER = !LOCAL && location.host;
+			nrequire = window.require;
+			
+			onerror = function(e){
+				$('body').css({background:'#A00'});
+				if(typeof V !== "undefined"){
+					V.error(e);
+				}
+			};
+			if(NODE){
+				process._events.uncaughtException = [];
+				process.on("uncaughtException",function(err){
+					$('body').css({background:'#A00'});
+					if(typeof V !== "undefined"){
+						V.error({title:"Uncaught Exception!",message:e.message||e});
+					}
+				});
+			}
+		</script>
+		<script src='lib/require-2.1.9.min.js'></script>
+		<script>
+		require = nrequire;//node-webkit itself requires window.require() be node's requirer
+		//dev-stuff
+		if(NODE){
+			nw_gui = nrequire('nw.gui');
+			nw_win = nw_gui.Window.get(window);
+			//let F12 open dev tools
+			$(function(){
+				$(window).on("keydown",function(e){
+					console.log(e.keyCode);
+					if(e.keyCode === 123){
+						nw_win.showDevTools();
+					}
+				});
+			})
+		}
+		</script>
+		
+		<script src='lib/codemirror/lib/codemirror.js'></script>
+		<script src="lib/codemirror/addon/mode/loadmode.js"></script>
+		<script>CodeMirror.modeURL = "lib/codemirror/mode/%N/%N.js";</script>
+		<script src='lib/notifications.js'></script>
+		<script src='lib/ace/ace.js'></script>
+		<script src="lib/firebase.js"></script>
+		<script src="lib/firepad.js"></script>
+		<script src='lib/utils.js'></script>
+		<script src='$ContextMenu.js'></script>
+		<script src='$TabSet.js'></script>
+		<script src='server.js'></script>
+		<script src='ide.js'></script>
+		
+		<!-- Styles -->
+		<link href='reset.css' rel='stylesheet' type='text/css'>
+		<link href='ui.css' rel='stylesheet' type='text/css'>
+		<link href='main.css' rel='stylesheet' type='text/css'>
+		<link href='lib/firepad-dark.css' rel='stylesheet' type='text/css'>
+		<link href='lib/codemirror/lib/codemirror.css' rel='stylesheet' type='text/css'>
+		
+		<link href='http://fonts.googleapis.com/css?family=Molengo&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro' rel='stylesheet' type='text/css'>
+		
+		<link rel='icon' href='icon-16.png' sizes="16x16" type='image/png'>
+		<link rel='icon' href='icon-512.png' sizes="512x512" type='image/png'>
+		
+		<!-- Scripts/Styles after this point loaded dynamically. -->
+	</head>
+	<body>
+		<h id="ide">
+			<h id="sidebar">
+				<v id="sidebar-inner">
+					<v id="workspaces-list"></v>
+					<v id="file-tree"></v>
+				</v>
+				<v id="sidebar-handle"></v>
+			</h>
+			<v id="workspaces"></v>
+		</h>
+	</body>
+</html>

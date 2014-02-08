@@ -1,0 +1,193 @@
+
+/* define flexible elements */
+h {
+	display: flex;
+	flex-direction: row;
+}
+v {
+	display: flex;
+	flex-direction: column;
+}
+/* animate, mostly */
+* {
+	-webkit-transition: background .2s ease-in-out, color .2s ease-in-out, opacity .2s ease-in-out;
+}
+.tab-content * {
+	-webkit-transition: none;
+}
+/* make shit not select which bad */
+:not(input):not(textarea) {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+/* reset, mostly */
+html, body, iframe, #ide {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	width: 100%;
+	height: 100%;
+	color: white;
+	font-size: 100%;
+	vertical-align: baseline;
+	line-height: 1;
+	white-space: nowrap;
+	font-family: 'Source Sans Pro', sans-serif;
+}
+
+body {
+	background: -webkit-linear-gradient(top, rgba(125,125,125,0.4) 0%, rgba(0,0,0,0.4) 100%), url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAHElEQVQIW2MUFxf/z4AEGHEKvHz5EqwOrgImAAAasgqLEHTwNQAAAABJRU5ErkJggg==);
+}
+ol, ul {
+	list-style: none;
+}
+/*context menus*/
+.context-menu {
+	color: #FFF;
+	background: #000;
+	border: 1px solid #ccc;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	*border-right-width: 2px;
+	*border-bottom-width: 2px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+.context-menu-item {
+	text-align: left;
+	display: block;
+	padding: 3px 15px;
+	clear: both;
+	font-weight: normal;
+	line-height: 18px;
+	color: #FFF;
+	white-space: nowrap;
+}
+
+.context-menu-item:hover {
+	color: #fff;
+	background-color: #333;
+}
+
+
+/* sidebar/workspace layout */
+#workspaces-list {
+	min-height: 0;
+}
+#sidebar {
+	table-layout: fixed;
+}
+/* sidebar */
+#sidebar {
+	background: rgba(0,0,0,0.5);
+}
+#sidebar-handle {
+	width: 5px;
+	cursor: col-resize;
+	background: rgba(255,255,255,0.2);
+}
+#sidebar-handle:hover {
+	background: rgba(255,255,255,0.3);
+}
+.col-resize #sidebar-handle {
+	background: rgba(255,255,255,0.4);
+}
+.col-resize * { cursor: col-resize !important; }
+
+#sidebar-inner {
+	flex: 1;
+	overflow: hidden;
+}
+
+/* workspaces */
+#workspaces, .workspace-container, .workspace, .tabset, .tabset-contents, .tab-content {
+	flex: 1;
+}
+.workspace, .tabset, .tabset-contents {
+	display: flex;
+	flex-direction: column;
+}
+/*
+.workspace:empty {
+	align-self: center;
+}
+.workspace:empty::after {
+	content: "<-";
+	display: -webkit-flex;
+}
+/* show/hide workspaces */
+.awayeth, .awayeth * {
+	opacity: 0;
+	pointer-events: none;
+}
+
+/* tabs */
+.tabstrip {
+	display: flex;
+	flex-direction: row;
+	flex-basis: 30px;
+	position: relative;
+	margin-top: 3px;
+	
+	background: rgba(0,0,0,0.3);
+}
+.tab-handle {
+	background: rgba(255,255,255,0.1);
+	cursor: default;
+	border: 1px solid rgba(255,255,255,0.5);
+	border-bottom: 0;
+	font-family: 'Source Sans Pro', sans-serif;
+	position: absolute;
+	height: 100%;
+	box-sizing: border-box;
+	
+	text-overflow: ellipsis;
+	width: 200px;
+	white-space: nowrap;
+	overflow: hidden;
+	
+	display: inline-block;
+	padding: 3px 6px;
+	border-radius: 5px 5px 0 0;
+	margin-bottom: 0;
+}
+.tab-handle:hover {
+	background: rgba(255,255,255,0.2);
+}
+.tab-handle.active {
+	background: rgba(0,0,0,0.3);
+}
+.tab-handle.dragging, .tab-handle.resizing {
+	-webkit-transition: opacity .2s ease-in-out;
+}
+.tab-handle:not(.dragging):not(.resizing) {
+	transition: opacity .2s ease-in-out, left .2s ease-in-out;
+}
+/*.tab-handle.dragging, .tab-handle.resizing {
+	-webkit-transition: background .2s ease-in-out, color .2s ease-in-out, opacity .2s ease-in-out;
+}
+.tab-handle:not(.dragging):not(.resizing) {
+	transition: background .2s ease-in-out, color .2s ease-in-out, opacity .2s ease-in-out, left .2s ease-in-out;
+}*/
+.tab-content {
+	box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 11px 0px inset;
+}
+
+
+/* */
+.monospace {
+	font-family: 'Inconsolata', sans-serif;
+}
+@-webkit-keyframes erroneous {
+	0% {opacity: 0.0;}
+	50% {opacity: 0.5;}
+	100% {opacity: 0.0;}
+}
+
+
+
+body {
+	-webkit-filter: hue-rotate(0deg);
+}

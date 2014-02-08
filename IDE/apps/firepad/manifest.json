@@ -1,0 +1,6 @@
+{
+	"name": "FirePad",
+	"description": "Rich Text Editor",
+	"edit": ["*.fpad","*.fpad.html"],
+	"main": "editor.js"
+}

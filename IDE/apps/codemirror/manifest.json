@@ -1,0 +1,6 @@
+{
+	"name": "CodeMirror",
+	"description": "It's a code editor.",
+	"edit": ["code", "text/*"],
+	"main": "editor.js"
+}

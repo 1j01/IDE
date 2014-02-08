@@ -1,0 +1,18 @@
+﻿{
+	"name": "HTMLSICK",
+	"description": "An experimental IDE",
+	"version": "0.1.1",
+	"keywords": ["IDE","experimental","awesome"],
+	"main": "index.html",
+	"window": {
+		"title": "IDE",
+		
+		"show": true,
+		"toolbar": false,
+		"frame": true,
+		
+		"icon": "icon-512.png"
+		
+	},
+	"single-instance": true
+}

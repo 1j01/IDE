@@ -1,0 +1,9 @@
+{
+    "name": "HTMLSICK IDE",
+    "description": "",
+    "run": {
+        
+    },
+    "edit": "~/Web/ide/htmlsick/",
+    "autosave": false
+}

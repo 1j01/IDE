@@ -1,0 +1,69 @@
+
+/* @TODO: prefix this stuff with something? */
+
+input, button {
+    background: #000;
+    color: #FFF;
+    border: 1px solid #ccc;
+}
+button {
+    cursor: pointer;
+}
+
+input[type=number].no-spin-button::-webkit-inner-spin-button, 
+input[type=number].no-spin-button::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number]::-webkit-inner-spin-button { 
+    -webkit-appearance: none;
+    cursor: pointer;
+    display: block;
+    width: 8px;
+    color: #FFF;
+    text-align: center;
+    position: relative;
+}
+
+input[type=number]::-webkit-inner-spin-button:before:hover,
+input[type=number]::-webkit-inner-spin-button:after:hover {
+    color: #0F0;
+}
+
+input[type=number]::-webkit-inner-spin-button:before,
+input[type=number]::-webkit-inner-spin-button:after {
+    content: "^";
+    font-family: monospace;
+    position: absolute;
+    right: 0;
+}
+
+input[type=number]::-webkit-inner-spin-button:before {
+    top: 0px;
+}
+
+input[type=number]::-webkit-inner-spin-button:after {
+    bottom: 0px;
+    -webkit-transform: rotate(180deg);
+}
+
+
+
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background: black;
+    border: 0;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(255,255,255,0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    border-radius: 10px;
+    background: rgba(255,255,255,0.3);
+}

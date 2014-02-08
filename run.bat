@@ -1,0 +1,1 @@
+start "%CD%\build-tools\nw" "%CD%\build-tools\nw\nw.exe" "%CD%\IDE" "live"

@@ -109,19 +109,6 @@ ol, ul {
 	display: flex;
 	flex-direction: column;
 }
-/*
-.workspace:empty {
-	align-self: center;
-}
-.workspace:empty::after {
-	content: "<-";
-	display: -webkit-flex;
-}
-/* show/hide workspaces */
-.awayeth, .awayeth * {
-	opacity: 0;
-	pointer-events: none;
-}
 
 /* tabs */
 .tabstrip {
@@ -187,6 +174,15 @@ ol, ul {
 }
 
 
+.ace_search {
+	background-color: #050505 !important;
+	border: 1px solid #757575 !important;
+	color: #FFF !important;
+}
+.ace_search * {
+	color: #FFF !important;
+	background-color: #050505 !important;
+}
 
 body {
 	-webkit-filter: hue-rotate(0deg);

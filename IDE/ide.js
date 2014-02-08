@@ -131,7 +131,7 @@
 								}
 								
 								//finally!
-								apps[app_name] = app;
+								apps[app_dirname] = app;
 								app.path = app_path;
 								
 								one_loaded();
@@ -332,7 +332,14 @@
 			var aFile = relative_path_or_File;
 			f.path = relative_path_or_File.path;
 			f.name = relative_path_or_File.name;
-			f.relative_path = mod_path.relative(process.cwd(),f.path);
+			if(NODE){
+				f.relative_path = mod_path.relative(process.cwd(),f.path);
+			}else{
+				f.path = "?";
+				f.relative_path = "?";
+				f.content = "@TODO: readonly local file access?";
+				f.__READ_TIME__ = Date.now() + 60*1000;
+			}
 		}else{
 			var rel_path = relative_path_or_File;
 			f.relative_path = rel_path;

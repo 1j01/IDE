@@ -242,7 +242,7 @@
 		};
 		
 		$ws.openFile = function(file, _app){
-			if(typeof file === "string"){
+			if(!(file instanceof rFile)){
 				file = new rFile(file);
 			}
 			
@@ -325,12 +325,21 @@
 	}
 
 	//"Real File"
-	function rFile(rel_path){
+	function rFile(relative_path_or_File){
 		var f = this;
 		
-		f.relative_path = rel_path;
-		f.path = mod_path ? mod_path.resolve(rel_path) : (location.href.replace(/index.html$/, "")+rel_path);
-		f.name = rel_path.replace(/^.*\//,"");
+		if(relative_path_or_File instanceof File){
+			var aFile = relative_path_or_File;
+			f.path = relative_path_or_File.path;
+			f.name = relative_path_or_File.name;
+			f.relative_path = mod_path.relative(process.cwd(),f.path);
+		}else{
+			var rel_path = relative_path_or_File;
+			f.relative_path = rel_path;
+			f.path = mod_path ? mod_path.resolve(rel_path) : (location.href.replace(/index.html$/, "")+rel_path);
+			f.name = rel_path.replace(/^.*\//,"");
+		}
+		
 		
 		f.toString = function(){
 			return "<"+f.path+">";
@@ -394,7 +403,7 @@
 						message: (err.message||err)
 					});
 				}else{
-					V.success("Saved file "+f.path);
+					V.success("Saved file "+f.path,{t:2000});
 				}
 				callback && callback(err, content);
 			});
@@ -418,10 +427,35 @@
 		};
 	}
 	
+	//opening files
 	if(typeof nwgui !== "undefined"){
 		nwgui.App.on("open",function(cmdline){
 			V.success(cmdline,{title:"Command Line:"});
 			$activeWorkspace.openFile(cmdline);
 		});
 	}
+	$.event.props.push('dataTransfer');
+	
+	$("html").on("dragover", function(e){
+		e.preventDefault();  
+		e.stopPropagation();
+		$(this).addClass('dragging');
+	});
+	
+	$("html").on("dragleave", function(e){
+		e.preventDefault();  
+		e.stopPropagation();
+		$(this).removeClass('dragging');
+	});
+	
+	$("html").on("drop", function(e) {
+		var files = e.dataTransfer.files;
+		if(files && files.length > 0){
+			e.preventDefault();  
+			e.stopPropagation();
+			$.each(files,function(i,file){
+				$activeWorkspace.openFile(file);
+			});
+		}
+	});
 })();

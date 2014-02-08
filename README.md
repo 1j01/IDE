@@ -13,10 +13,6 @@ It can be run in different ways:
 	It can't save, although once I add the option to connect to a server from the standalone app, it should have the same abilities as the webserved (appserved?) app.
 	(Also might not need `--allow-file-access-from-files`?)
 
-## maybe
-Realtime Integration with a multiplayer game engine
-
-
 ## Todo, and stuff
 Firepad support!
 State/Options
@@ -66,3 +62,7 @@ Anyway they flip out when you drag them there are more than... just about exactl
 The tabs are sorted based on... a property calculated by sorting them!? Well there's your problem! ... uh so
 
 This is still pretty-weird. When there's 11 or more tabs, the first 2 the middle and second-last tabs spaz out and converge near the left.
+
+
+## maybe
+Realtime integration with a multiplayer game engine?

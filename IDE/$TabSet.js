@@ -13,7 +13,7 @@ function $TabSet(){
 	var tab_width = 100;
 	var fnames = [];
 	
-	var tm = 3;//tab margin
+	var tm = 6;//tab margin
 	
 	$tabset.$Tab = function $Tab(_file){
 		var $tab = $("<div class='tab-handle'/>").appendTo($tabstrip);
@@ -28,7 +28,7 @@ function $TabSet(){
 			}else{
 				return $tabtitle.text();
 			}
-		}
+		};
 		$tab.ttip = function(ttip){
 			if(ttip){
 				return $tab.attr("title",ttip);
@@ -52,6 +52,8 @@ function $TabSet(){
 		$tab.on("mousedown",function(e){
 			$tabs.not($tab).trigger("deactivate");
 			$tab.trigger("activate");
+			
+			order();
 			
 			var offset = e.clientX - $tab.position().left;
 			$G.on("mouseup",function mouseup(e){
@@ -98,7 +100,8 @@ function $TabSet(){
 		for(var i=0;i<tabs.length;i++){
 			tabs[i].css({
 				left: tabs[i].xto=tab_width*i,
-				width: tab_width-tm
+				width: tab_width-tm,
+				zIndex: (200-i) + (tabs[i].hasClass("active")*500)
 			});
 		}
 	}

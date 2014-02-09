@@ -36,7 +36,6 @@
 }
 .tab-handle.active {
 	background: #000;
-	z-index: 500;
 }
 .tab-handle.dragging, .tab-handle.resizing {
 	-webkit-transition: none;

@@ -11,7 +11,7 @@
 		<script>
 			NODE = typeof require !== "undefined";
 			LOCAL = location.protocol === "file:";
-			SERVER = !LOCAL && location.host;
+			REMOTE_SERVER = !LOCAL && location.host;
 			nrequire = window.require;
 			
 			onerror = function(e){

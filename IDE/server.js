@@ -50,31 +50,11 @@ POSTs = {
 	}
 };
 
-if(NODE){
-	//direct access
-	GET = function(thing, callback){
-		try {
-			var cmdfun = GETs[thing];
-			cmdfun(callback);
-		}catch(err){
-			console.error("@GET "+thing+"(): ",err.message);
-			callback(err);
-		}
-	};
-	POST = function(action, data, callback){
-		try {
-			var cmdfun = POSTs[action];
-			cmdfun(data, callback);
-		}catch(err){
-			console.error("@POST "+action+"(): ",err.message);
-			callback(err);
-		}
-	};
-}else if(SERVER){
-	//remote access
-	GET = function(thing, callback){
+GET = function(thing, callback){
+	if(REMOTE_SERVER){
+		//remote access
 		$.ajax({
-			url: "http://"+SERVER+"/"+thing+"/",
+			url: "http://"+REMOTE_SERVER+"/"+thing+"/",
 			dataType: "text",
 			contentType: "application/json",
 			type: "GET",
@@ -87,14 +67,37 @@ if(NODE){
 				callback(error);
 			}
 		});
-	};
-	POST = function(action, data, callback){
-		if(!$.isPlainObject(data)){
-			V.warn("Not a plain object: "+data+"\n(see console)");
-			console.warn(data);
+	}else if(NODE){
+		//direct access
+		try {
+			var cmdfun = GETs[thing];
+			cmdfun(callback);
+		}catch(err){
+			console.error("@GET "+thing+"(): ",err.message);
+			callback(err);
 		}
+	}else{
+		//dummy access
+		if(thing === "workspaces"){
+			callback(null, [{
+				name: "Dummy Meta",
+				files: ["../README.md", "server.js",, "index.html", "ide.js", "main.css"]
+			}]);
+		}else if(thing === "apps"){
+			callback(null, ["ace", "codemirror", "textarea", "firepad"]);
+		}
+	}
+};
+
+POST = function(action, data, callback){
+	if(!$.isPlainObject(data)){
+		V.warn("Not a plain object: "+data+"\n(see console)");
+		console.warn(data);
+	}
+	if(REMOTE_SERVER){
+		//remote access
 		$.ajax({
-			url: "http://"+SERVER+"/"+action+"/",
+			url: "http://"+REMOTE_SERVER+"/"+action+"/",
 			dataType: "text",
 			contentType: "application/json",
 			type: "POST",
@@ -109,21 +112,17 @@ if(NODE){
 				callback(error);
 			}
 		});
-	};
-}else{
-	//dummy access
-	V.info({title:"Running in dummy mode.",message:"No write access or anything."});
-	GET = function(thing, callback){
-		if(thing === "workspaces"){
-			callback(null, [{
-				name: "Dummy Meta",
-				files: ["../README.md", "index.html", "ide.js", "main.css"]
-			}]);
-		}else if(thing === "apps"){
-			callback(null, ["ace", "codemirror", "textarea", "firepad"]);
+	}else if(NODE){
+		//direct access
+		try {
+			var cmdfun = POSTs[action];
+			cmdfun(data, callback);
+		}catch(err){
+			console.error("@POST "+action+"(): ",err.message);
+			callback(err);
 		}
-	};
-	POST = function(action, data, callback){
+	}else{
+		//dummy access
 		if(action === "read"){
 			var fname = data.path;
 			$.ajax({
@@ -139,8 +138,8 @@ if(NODE){
 		}else{
 			V.error({title:"No server connection.",message:"No write access or anything."});
 		}
-	};
-}
+	}
+};
 
 
 if(NODE){
@@ -200,9 +199,9 @@ if(NODE){
 		var sockets = [];
 		var server = ex.listen(port,function(){
 			V.success({
-				time:-1,
-				title:"Server started!",
-				html:"<input value=\"http://"+ip+":"+port+"/\"/>"
+				time: -1,
+				title: "Server started!",
+				html: "<input value=\"http://"+ip+":"+port+"/\"/>"
 			});
 
 			server.on('connection', function(socket){

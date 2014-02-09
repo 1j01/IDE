@@ -110,54 +110,6 @@ ol, ul {
 	flex-direction: column;
 }
 
-/* tabs */
-.tabstrip {
-	display: flex;
-	flex-direction: row;
-	flex-basis: 30px;
-	position: relative;
-	margin-top: 3px;
-	
-	background: rgba(0,0,0,0.3);
-}
-.tab-handle {
-	background: rgba(255,255,255,0.1);
-	cursor: default;
-	border: 1px solid rgba(255,255,255,0.5);
-	border-bottom: 0;
-	font-family: 'Source Sans Pro', sans-serif;
-	position: absolute;
-	height: 100%;
-	box-sizing: border-box;
-	
-	text-overflow: ellipsis;
-	width: 200px;
-	white-space: nowrap;
-	overflow: hidden;
-	
-	display: inline-block;
-	padding: 3px 6px;
-	border-radius: 5px 5px 0 0;
-	margin-bottom: 0;
-}
-.tab-handle:hover {
-	background: rgba(255,255,255,0.2);
-}
-.tab-handle.active {
-	background: rgba(0,0,0,0.3);
-}
-.tab-handle.dragging, .tab-handle.resizing {
-	-webkit-transition: opacity .2s ease-in-out;
-}
-.tab-handle:not(.dragging):not(.resizing) {
-	transition: opacity .2s ease-in-out, left .2s ease-in-out;
-}
-/*.tab-handle.dragging, .tab-handle.resizing {
-	-webkit-transition: background .2s ease-in-out, color .2s ease-in-out, opacity .2s ease-in-out;
-}
-.tab-handle:not(.dragging):not(.resizing) {
-	transition: background .2s ease-in-out, color .2s ease-in-out, opacity .2s ease-in-out, left .2s ease-in-out;
-}*/
 .tab-content {
 	box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 11px 0px inset;
 }

@@ -1,6 +1,7 @@
 /*
 This module does not use flexbox, and thus can be used in less edgy projects.
 It does however rely on $().push defined in utils.js
+(and the styles in tabs.css)
 */
 function $TabSet(){
 	var $tabset = $("<div class='tabset'/>");
@@ -16,13 +17,24 @@ function $TabSet(){
 	
 	$tabset.$Tab = function $Tab(_file){
 		var $tab = $("<div class='tab-handle'/>").appendTo($tabstrip);
+		var $tabtitle = $("<span class='tab-text'/>").appendTo($tab);
 		$tab.$content = $("<div class='tab-content'/>").appendTo($contents).hide();
 		$tabs.push($tab);
 		tabs.push($tab);
-		$tab.title = $tab.text;
+		$tab.title = function(title){
+			if(title){
+				$tabtitle.text(title);
+				return $tab;
+			}else{
+				return $tabtitle.text();
+			}
+		}
 		$tab.ttip = function(ttip){
-			$tab.attr("title",ttip);
-			return $tab;
+			if(ttip){
+				return $tab.attr("title",ttip);
+			}else{
+				return $tab.attr("title");
+			}
 		};
 		if(_file){
 			$tab.title(_file.name).ttip(_file.path);

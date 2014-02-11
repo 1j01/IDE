@@ -456,13 +456,15 @@
 		};
 	}
 	
-	//opening files
-	if(typeof nwgui !== "undefined"){
-		nwgui.App.on("open",function(cmdline){
+	//open files
+	if(typeof nw_gui !== "undefined"){
+		nw_gui.App.on("open",function(cmdline){
 			V.success(cmdline,{title:"Command Line:"});
 			$activeWorkspace.openFile(cmdline);
 		});
 	}
+	
+	//drag and drop files
 	$.event.props.push('dataTransfer');
 	
 	$("html").on("dragover", function(e){

@@ -38,13 +38,13 @@
 	background: #000;
 }
 .tab-handle.dragging, .tab-handle.resizing {
-	-webkit-transition: none;
+	transition: none;
 }
 .tab-handle:not(.dragging):not(.resizing) {
 	transition: left .2s ease-in-out;
 }
 /*.tab-handle.dragging, .tab-handle.resizing {
-	-webkit-transition: background .2s ease-in-out, color .2s ease-in-out, opacity .2s ease-in-out;
+	transition: background .2s ease-in-out, color .2s ease-in-out, opacity .2s ease-in-out;
 }
 .tab-handle:not(.dragging):not(.resizing) {
 	transition: background .2s ease-in-out, color .2s ease-in-out, opacity .2s ease-in-out, left .2s ease-in-out;

@@ -15,6 +15,8 @@ function $TabSet(){
 	
 	var tm = 6;//tab margin
 	
+	$tabset.$activeTab = null;
+	
 	$tabset.$Tab = function $Tab(_file){
 		var $tab = $("<div class='tab-handle'/>").appendTo($tabstrip);
 		var $tabtitle = $("<span class='tab-text'/>").appendTo($tab);
@@ -47,11 +49,16 @@ function $TabSet(){
 		$tab.on("activate",function(){
 			$tab.addClass("active");
 			$tab.$content.show();
+			$tabset.$activeTab = $tab;
 		});
 		$tab.xto = 0;
-		$tab.on("mousedown",function(e){
+		$tab.activate = function(){
 			$tabs.not($tab).trigger("deactivate");
 			$tab.trigger("activate");
+		};
+		$tab.activate();
+		$tab.on("mousedown",function(e){
+			$tab.activate();
 			
 			order();
 			

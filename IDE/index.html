@@ -23,10 +23,7 @@
 			if(NODE){
 				process._events.uncaughtException = [];
 				process.on("uncaughtException",function(err){
-					$('body').css({background:'#A00'});
-					if(typeof V !== "undefined"){
-						V.error({title:"Uncaught Exception!",message:e.message||e});
-					}
+					onerror({title:"Uncaught Exception!",message:e.message||e});
 				});
 			}
 		</script>

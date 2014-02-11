@@ -29,21 +29,21 @@
 		</script>
 		<script src='lib/require-2.1.9.min.js'></script>
 		<script>
-		require = nrequire;//node-webkit itself requires window.require() be node's requirer
-		//dev-stuff
-		if(NODE){
-			nw_gui = nrequire('nw.gui');
-			nw_win = nw_gui.Window.get(window);
-			//let F12 open dev tools
-			$(function(){
-				$(window).on("keydown",function(e){
-					console.log(e.keyCode);
-					if(e.keyCode === 123){
-						nw_win.showDevTools();
-					}
-				});
-			})
-		}
+			require = nrequire;//node-webkit itself requires window.require() be node's requirer
+			//dev-stuff
+			if(NODE){
+				nw_gui = nrequire('nw.gui');
+				nw_win = nw_gui.Window.get(window);
+				//let F12 open dev tools
+				$(function(){
+					$(window).on("keydown",function(e){
+						console.log(e.keyCode);
+						if(e.keyCode === 123){
+							nw_win.showDevTools();
+						}
+					});
+				})
+			}
 		</script>
 		
 		<script src='lib/codemirror/lib/codemirror.js'></script>

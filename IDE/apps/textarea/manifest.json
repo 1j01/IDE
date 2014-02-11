@@ -1,6 +1,6 @@
 {
 	"name": "Text Area",
 	"description": "It's an example text editor app.",
-	"edit": ["code", "text/*"],
+	"edit": ["text/plain","*.txt"],
 	"main": "editor.js"
 }

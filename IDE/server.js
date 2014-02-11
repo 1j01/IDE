@@ -81,7 +81,7 @@ GET = function(thing, callback){
 		if(thing === "workspaces"){
 			callback(null, [{
 				name: "Dummy Meta",
-				files: ["../README.md", "server.js",, "index.html", "ide.js", "main.css"]
+				files: ["../README.md", "server.js", "index.html", "ide.js", "main.css"]
 			}]);
 		}else if(thing === "apps"){
 			callback(null, ["ace", "codemirror", "textarea", "firepad"]);

@@ -3,13 +3,14 @@
 	options = {mimes:{},appsettings:{}};
 	
 	var workspaces = [];
+	
 	apps = {};
 	$(apps).data("loaded",false);
+	
 	var fs, mod_path;
 	if(nrequire){
 		fs = nrequire("fs");
 		mod_path = nrequire("path");
-		//process.on("uncaughtException", function(err) { alert("error: " + err); });
 	}
 	
 	var fb = new Firebase("https://experimental-ide.firebaseio.com/firepads");
@@ -18,6 +19,9 @@
 	
 	$.ajaxSetup({ cache: true });
 	$G = $(window);
+	
+	$activeWorkspace = null;
+	$activeTab = null;
 	
 	GET("apps",function(err, app_names){
 		if(err){
@@ -150,8 +154,6 @@
 		}
 	});
 	
-	
-	$activeWorkspace = null;
 	$(function(){
 		var $body = $("body");
 		var $workspaces_list = $("#workspaces-list");
@@ -226,11 +228,13 @@
 
 	function $Workspace(ws_def){
 		var $handle = $("<div class='workspace-handle'/>");
-		var $ws = $("<div class='workspace'/>");
+		$handle.text(name).on("click", function(){
+			$ws.toggle();
+		});
+		
+		var $ws = new $TabSet();
+		$ws.addClass('workspace');
 		$activeWorkspace = $ws;
-		var $ts = new $TabSet();
-		$ts.appendTo($ws);
-		$ws.$Tab = $ts.$Tab;
 		
 		$ws.name = ws_def.name;
 		$ws.files = ws_def.files;
@@ -330,15 +334,6 @@
 				}
 			}
 		};
-		$ws.on("resize", function(){
-			$ts.triggerHandler("resize");
-		});
-		$ws.on("resize-animation", function(e, new_ws_area_width, speed){
-			$ts.triggerHandler("resize-animation", [new_ws_area_width, speed]);
-		});
-		$handle.text(name).on("click", function(){
-			$ws.toggle();
-		});
 		
 		//add self to the page
 		$("#workspaces-list").append($handle);

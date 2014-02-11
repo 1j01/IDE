@@ -2,7 +2,7 @@
 	
 	options = {mimes:{},appsettings:{}};
 	
-	var workspaces = [];
+	workspaces = [];
 	
 	apps = {};
 	$(apps).data("loaded",false);

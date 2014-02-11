@@ -2,6 +2,7 @@
 This module does not use flexbox, and thus can be used in less edgy projects.
 It does however rely on $().push defined in utils.js
 (and the styles in tabs.css)
+(and it sets a global $activeTab)
 */
 function $TabSet(){
 	var $tabset = $("<div class='tabset'/>");
@@ -49,7 +50,7 @@ function $TabSet(){
 		$tab.on("activate",function(){
 			$tab.addClass("active");
 			$tab.$content.show();
-			$tabset.$activeTab = $tab;
+			$tabset.$activeTab = $activeTab = $tab;
 		});
 		$tab.xto = 0;
 		$tab.activate = function(){

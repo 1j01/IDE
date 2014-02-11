@@ -230,6 +230,10 @@
 		var $handle = $("<div class='workspace-handle'/>");
 		$handle.text(name).on("click", function(){
 			$ws.toggle();
+			if($ws.is(":visible")){
+				$activeWorkspaace = $ws;
+				$activeTab = $ws.$activeTab;
+			}
 		});
 		
 		var $ws = new $TabSet();

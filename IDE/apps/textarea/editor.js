@@ -28,6 +28,7 @@ app.open = function($ws, file){
 	});
 	
 	$ws.on("resize",function(){
-		//usually not necessary (use css instead)
+		//update the size of the editor
+		//Use CSS when you can.
 	});
 };

@@ -23,9 +23,12 @@
 	$activeWorkspace = null;
 	$activeTab = null;
 	
-	GET("apps",function(err, app_names){
+	GET("apps", function(err, app_names){
 		if(err){
-			V.error({title:"Failed to load the list of apps!!!!!! >:(",message:err});
+			V.error({
+				title: "Failed to load the list of apps!!!!!! >:(",
+				message: err
+			});
 		}else{
 			console.log("Apps: "+app_names.join(", "));
 			var n_apps = app_names.length;//Object.keys(apps).length;
@@ -40,7 +43,7 @@
 				}else if(n_loaded + n_failed >= n_apps){
 					V.warn("(Some apps failed to load.)");
 				}if(n_loaded + n_failed >= n_apps){
-					$(apps).trigger("loaded").data("loaded",true);
+					$(apps).trigger("loaded").data("loaded", true);
 				}
 			};
 			var one_loaded = function(){
@@ -51,7 +54,7 @@
 				n_failed++;
 				count();
 			};
-			$.each(app_names,function(i,app_dirname){
+			$.each(app_names, function(i,app_dirname){
 				var app_path = "apps/"+app_dirname+"/";
 				var app_name;
 				var E = function(e){
@@ -75,8 +78,8 @@
 						
 						var requiredFields = {
 							"name": "App Name",
-							"edit": ["code","text/*"],
 							"description": "A description of your app.",
+							"edit": ["code","text/*"],
 							"main": "editor-main.js"
 						};
 						for(var f in requiredFields){

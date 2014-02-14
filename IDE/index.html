@@ -4,7 +4,7 @@
 		<meta charset='utf-8'>
 		<title>IDE</title>
 		
-		<style>html{background-color:#000;}</style>
+		<style>html{background:#000}</style>
 		
 		<script src='lib/jquery-2.1.0.min.js'></script>
 		
@@ -37,7 +37,7 @@
 				//let F12 open dev tools
 				$(function(){
 					$(window).on("keydown",function(e){
-						console.log(e.keyCode);
+						console.log("keydown",e.keyCode,e.char);
 						if(e.keyCode === 123){
 							nw_win.showDevTools();
 						}

@@ -25,8 +25,8 @@
 	padding: 3px 6px;
 	border-radius: 5px 5px 0 0;
 	margin-bottom: 0;
-    overflow: visible !important; /* jquery adds an inline overflow:hidden while animating */
-    
+	overflow: visible !important; /* jquery adds an inline overflow:hidden while animating */
+	
 	background: #444;
 }
 .tab-handle:hover {

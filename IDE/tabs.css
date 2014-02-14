@@ -18,16 +18,14 @@
 	height: 100%;
 	box-sizing: border-box;
 	
-	text-overflow: ellipsis;
 	width: 200px;
 	white-space: nowrap;
-	overflow: hidden;
 	
 	display: inline-block;
 	padding: 3px 6px;
 	border-radius: 5px 5px 0 0;
 	margin-bottom: 0;
-    overflow: visible;
+    overflow: visible !important; /* jquery adds an inline overflow:hidden while animating */
     
 	background: #444;
 }
@@ -85,4 +83,12 @@
 	right: -5px;
 	border-right: 1px solid #aaa;
 	-webkit-transform: skewX(15deg);
+}
+
+
+/* text overflow */
+.tab-text {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	width: 100%;
 }

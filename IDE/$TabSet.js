@@ -14,7 +14,8 @@ function $TabSet(){
 	var tab_width = 100;
 	var fnames = [];
 	
-	var tm = 6;//tab margin
+	var max_tab_width = 150;
+	var tab_margin = 6;
 	
 	$tabset.$activeTab = null;
 	
@@ -88,7 +89,9 @@ function $TabSet(){
 				for(var i=0;i<tabs.length;i++){
 					var tab = tabs[i];
 					if(tab === $tab) continue;
-					tab.css({left: tab.xto=tab_width*i});
+					tab.css({
+						left: tab.xto = tab_width*i + tab_margin
+					});
 				}
 			}
 		});
@@ -101,21 +104,21 @@ function $TabSet(){
 	};
 	function calc_tab_width(){
 		//man, I hate functions that sound like they should return a value but then they just set some variable
-		tab_width = Math.min($tabstrip.width()/$tabs.length, 150);
+		tab_width = Math.min($tabstrip.width()/$tabs.length - tab_margin, max_tab_width);
 	}
 	function order(){
 		//calc_tab_width();
 		for(var i=0;i<tabs.length;i++){
 			tabs[i].css({
-				left: tabs[i].xto=tab_width*i,
-				width: tab_width-tm,
+				left: tabs[i].xto = tab_width*i + tab_margin,
+				width: tab_width - tab_margin,
 				zIndex: (200-i) + (tabs[i].hasClass("active")*500)
 			});
 		}
 	}
 	$tabset.on("resize", function resize(){
 		calc_tab_width();
-		$tabs.width(tab_width-tm);//20=margin+border+padding (shouldn't rely on this)
+		$tabs.width(tab_width - tab_margin);
 		$tabs.addClass("resizing");
 		order();
 		setTimeout(function(){
@@ -125,12 +128,12 @@ function $TabSet(){
 	$tabset.on("resize-animation", function resize(e, new_ts_width, speed){
 		
 		calc_tab_width();
-		var new_tab_width = Math.min(new_ts_width/$tabs.length, 150);
+		var new_tab_width = Math.min(new_ts_width/$tabs.length - tab_margin, max_tab_width);
 		$tabs.addClass("resizing");
 		for(var i=0;i<tabs.length;i++){
 			tabs[i].animate({
-				left: tabs[i].xto=new_tab_width*i,
-				width: new_tab_width-tm
+				left: tabs[i].xto = new_tab_width*i + tab_margin,
+				width: new_tab_width - tab_margin
 			}, speed, function(){
 				$tabs.removeClass("resizing");
 				order();

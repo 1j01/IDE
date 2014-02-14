@@ -227,6 +227,65 @@
 		setTimeout(function(){
 			$G.triggerHandler("resize");
 		},10);
+		
+		
+		$G.on("keydown",function(e){
+			if(e.ctrlKey){
+				if(e.keyCode === ord("S")){
+					if(!$activeTab){
+						return V.error("No active tab to save.",{t:2000});
+					}
+					if(!$activeTab.file){
+						return V.error("The active tab doesn't have a file to save!",{t:2000});
+					}
+					if(e.shiftKey || e.altKey){
+						//Ctrl-Shift-S / Ctrl-Alt-S: save as
+					}else{
+						//Ctrl-S: save
+					}
+				}else if(e.keyCode === 13){
+					if(e.altKey)return;
+					//Ctrl-Enter: live edit
+				}
+			}
+			function ord(c){
+				return c.charCodeAt(0);
+			}
+		});
+		
+		//open files
+		if(typeof nw_gui !== "undefined"){
+			nw_gui.App.on("open",function(cmdline){
+				V.success(cmdline,{title:"Command Line:"});
+				$activeWorkspace.openFile(cmdline);
+			});
+		}
+		
+		//drag and drop files
+		$.event.props.push('dataTransfer');
+		
+		$("html").on("dragover", function(e){
+			e.preventDefault();  
+			e.stopPropagation();
+			$(this).addClass('dragging');
+		});
+		
+		$("html").on("dragleave", function(e){
+			e.preventDefault();  
+			e.stopPropagation();
+			$(this).removeClass('dragging');
+		});
+		
+		$("html").on("drop", function(e) {
+			var files = e.dataTransfer.files;
+			if(files && files.length > 0){
+				e.preventDefault();  
+				e.stopPropagation();
+				$.each(files,function(i,file){
+					$activeWorkspace.openFile(file);
+				});
+			}
+		});
 	});
 
 	function $Workspace(ws_def){
@@ -459,37 +518,5 @@
 		};
 	}
 	
-	//open files
-	if(typeof nw_gui !== "undefined"){
-		nw_gui.App.on("open",function(cmdline){
-			V.success(cmdline,{title:"Command Line:"});
-			$activeWorkspace.openFile(cmdline);
-		});
-	}
 	
-	//drag and drop files
-	$.event.props.push('dataTransfer');
-	
-	$("html").on("dragover", function(e){
-		e.preventDefault();  
-		e.stopPropagation();
-		$(this).addClass('dragging');
-	});
-	
-	$("html").on("dragleave", function(e){
-		e.preventDefault();  
-		e.stopPropagation();
-		$(this).removeClass('dragging');
-	});
-	
-	$("html").on("drop", function(e) {
-		var files = e.dataTransfer.files;
-		if(files && files.length > 0){
-			e.preventDefault();  
-			e.stopPropagation();
-			$.each(files,function(i,file){
-				$activeWorkspace.openFile(file);
-			});
-		}
-	});
 })();

@@ -8,7 +8,6 @@ app.open = function($ws, file){
 	var cm = CodeMirror($tab.$content[0],{
 		indentWithTabs: true,//(for f***'s sake)
 		lineNumbers: true,
-		theme: "ambiance",
 		undoDepth: 1000,
 		extraKeys: {
 			"Tab": function(cm) {
@@ -35,7 +34,11 @@ app.open = function($ws, file){
 		css: /\.css$/,
 		htmlmixed: /\.html?$/,
 	};
+	
+	setTheme("ambiance");
+	
 	setMode();
+	
 	for(var mode in mode_matchers){
 		if(file.path.match(mode_matchers[mode])){
 			setMode(mode);
@@ -57,5 +60,14 @@ app.open = function($ws, file){
 		}else{
 			cm.setOption('mode', 'clike');
 		}
+	}
+	function setTheme(theme){
+		$('<link/>', {
+			rel: 'stylesheet',
+			type: 'text/css',
+			href: "lib/codemirror/theme/"+theme+".css"
+		}).appendTo('head').on("load",function(){
+			cm.setOption("theme", theme);
+		});
 	}
 };

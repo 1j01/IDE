@@ -441,7 +441,7 @@
 			//apply/execute changes without saving to disk
 			$("link[rel=stylesheet][href]").each(function(){
 				var $link = $(this);
-				if($link.attr("href").indexOf(f.name)!==-1){
+				if($link.prop("href") === f.name){
 					$link.prop('disabled',true);
 					var id = "edit-"+f.name.replace(/\W/g,"-");
 					var $style = $("style#"+id);

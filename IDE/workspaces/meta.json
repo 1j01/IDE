@@ -1,9 +1,0 @@
-{
-	"name": "HTMLSICK IDE",
-	"description": "",
-	"run": {
-		
-	},
-	"edit": "./*",
-	"autosave": false
-}

@@ -5,8 +5,8 @@
 	var config = V.config = {
 		defaultTimeOut: -1,//5000,
 		position: ["bottom", "right"],
-		debug: true,//show V.debug() notifications
-		logErrors: true,//log V.error()s to the console
+		debug: true,//show V.debug notifications
+		logErrors: false,//log V.errors to the console
 		notificationStyles: {
 			padding: "12px 18px",
 			margin: "0 0 6px 0",
@@ -98,7 +98,7 @@
 			$message.text(message);
 		}
 		
-		$notification.poof = function() {
+		$notification.poof = function(clicked) {
 			$notification
 				.animate({
 					opacity: 0,
@@ -121,7 +121,7 @@
 		}
 
 		$notification.on("click", function() {
-			$notification.clearQueue().poof();
+			$notification.clearQueue().poof(true);
 		});
 
 		$container.prepend($notification);

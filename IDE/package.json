@@ -1,9 +1,12 @@
-﻿{
+{
 	"name": "HTMLSICK",
 	"description": "An experimental IDE",
-	"version": "0.1.1",
+	"version": "0.0.1",
 	"keywords": ["IDE","experimental","awesome"],
+	"repository": "https://github.com/1j01/IDE.git",
+	
 	"main": "index.html",
+	"single-instance": true,
 	"window": {
 		"title": "IDE",
 		
@@ -13,6 +16,5 @@
 		
 		"icon": "icon-512.png"
 		
-	},
-	"single-instance": true
+	}
 }

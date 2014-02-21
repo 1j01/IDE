@@ -73,7 +73,7 @@ function $TabSet(){
 				$tab.addClass("dragging");
 			function mousemove(e){
 				var x = e.clientX - offset;
-				x = Math.max(0, Math.min(x, $tabset.width()-tab_width));
+				x = Math.max(tab_margin, Math.min(x, $tabset.width() - tab_width - tab_margin));
 				$tab.css({left: x});
 				//@TODO: @BUG @FIX
 				tabs.sort(function(a,b){

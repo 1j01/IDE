@@ -69,7 +69,7 @@ GET = function(thing, callback){
 		});
 	}else if(NODE){
 		//direct access
-		try {
+		try{
 			var cmdfun = GETs[thing];
 			cmdfun(callback);
 		}catch(err){
@@ -107,7 +107,10 @@ POST = function(action, data, callback){
 				callback(res.err, res.resobj);
 			},
 			error: function(xhr,status,error){
-				V.error({title:status,message:error});
+				V.error({
+					title: status,
+					message: error
+				});
 				console.debug(xhr);
 				callback(error);
 			}
@@ -118,7 +121,7 @@ POST = function(action, data, callback){
 			var cmdfun = POSTs[action];
 			cmdfun(data, callback);
 		}catch(err){
-			console.error("@POST "+action+"(): ",err.message);
+			console.error("@POST "+action+"(): ", err.message);
 			callback(err);
 		}
 	}else{
@@ -136,7 +139,10 @@ POST = function(action, data, callback){
 				}
 			});
 		}else{
-			V.error({title:"No server connection.",message:"No write access or anything."});
+			V.error({
+				title: "No server connection.",
+				message: "No write access or anything."
+			});
 		}
 	}
 };
@@ -147,19 +153,116 @@ if(NODE){
 	window.startServer = function startServer(port){
 		port = port || 1337;
 		if(port > 65535){
-			return V.error("Port must be less than or equal to <abbr title='16bit unsigned integer'>65535</abbr>.");
+			return V.error(
+				"Port must be less than or equal to"
+				+ "<abbr title='16bit unsigned integer'>"
+				+ Math.pow(2,16)
+				+ "</abbr>."
+			);
 		}
 		
-		var express = nrequire("express");
-		var ex = express();
-		var cwd = process.cwd();
+		var dir = process.cwd();
 		
 		//serve everything, including this file! :D
-		ex.use(express.static(cwd));
-		ex.use(express.json());
+		/////////////////
 		
-		for(var thing in GETs){
-			ex.get("/"+thing,(function(cmdfun){
+		var HTTP = require('http');
+		var FS = require('fs');
+		var PATH = require("path");
+		var URL = require('url');
+		
+		var mime_types = {
+			".html": "text/html",
+			".js": "text/javascript",
+			".css": "text/css",
+			
+			".htm": "text/html",
+			".txt": "text/plain",
+			".jpeg": "image/jpeg",
+			".jpg": "image/jpeg",
+			".png": "image/png",
+		};
+		
+		var server = HTTP.createServer(function(req, res){
+			function send(code, content){
+				res.writeHead(code, {
+					'Content-Type': "text/plain"
+				});
+				res.write(content+"\n");
+				res.end();
+			}
+			function sendJSON(code, content){
+				res.writeHead(code, {
+					'Content-Type': "application/json"
+				});
+				res.write(JSON.stringify(content)+"\n");
+				res.end();
+			}
+			var pathname = URL.parse(req.url).pathname;
+			//if(pathname === "/"){}else{return V.debug(pathname);}
+			
+			var m;
+			if(pathname === "/"){
+				var fname = PATH.join(dir, 'index.html');
+				FS.createReadStream(fname).pipe(res);
+			}else if(pathname === "/apps/"){
+				// list workspaces
+				GETs.apps(function(apps){
+					sendJSON(200, apps);
+				});
+			}else if(pathname === "/workspaces/"){
+				// list workspaces
+				GETs.workspaces(function(workspaces){
+					sendJSON(200, workspaces);
+				});
+			}else if(m=pathname.match(/^\/workspaces\/(?:([^/])\/(.*))?/)){
+				var ws_name = m[1];
+				var path = m[2];
+				console.log("ACCESS WS.",m);
+				
+				var ws = workspaces[ws_name];
+				if(!ws){
+					return V.warn("No workspace '"+ws_name+"'");
+				}
+				var filename = PATH.join(ws.path, path);
+				console.log(filename);
+			}else{
+				// static file serving
+				var filename = PATH.join(dir, pathname);
+				FS.lstat(filename, function(err, stats){
+					if(err){
+						send(404, err.code);
+					}else{
+						if(stats.isFile()){
+							// path exists, is a file
+							var mimeType = mime_types[PATH.extname(filename)];
+							res.writeHead(200, {
+								'Content-Type': mimeType
+									// "here is a bunch of bytes, hopefully there is an application over on your end which knows what to do with them"
+									|| "application/octet-stream"
+							});
+							
+							FS.createReadStream(filename).pipe(res);
+						}else if(stats.isDirectory()){
+							// path exists, is a directory
+							if(req.method === "GET"){
+								send(200, "that's a dir");
+							}else{
+								send(505, "uh, "+req.method+"?");
+							}
+						}else{
+							// Symbolic link, other?
+							// @TODO: follow symlinks? securely?
+							send(500, 'what?');
+						}
+					}
+				});
+			}
+		});
+		
+		/////////////////
+		/*for(var thing in GETs){
+			app.get("/"+thing,(function(cmdfun){
 				return function(req,res){
 					cmdfun(function(err,resobj){
 						res.send(JSON.stringify({err:err,resobj:resobj}));
@@ -168,7 +271,7 @@ if(NODE){
 			})(GETs[thing]));
 		}
 		for(var action in POSTs){
-			ex.post("/"+action,(function(cmdfun){
+			app.post("/"+action,(function(cmdfun){
 				return function(req,res){
 					try {
 						//console.debug(action,req.body);
@@ -177,17 +280,15 @@ if(NODE){
 							res.send(JSON.stringify({err:err,resobj:resobj}));
 						});
 					}catch(e){
-						res.send(JSON.stringify({err:"JSON.parse error (probably): "+e.message}));
+						res.send(JSON.stringify({err:e.message}));
 					}
 				};
 			})(POSTs[action]));
-		}
+		}*/
 		
 		//find local ip
-		var ip;
-		var os = nrequire('os');
-		var ifaces = os.networkInterfaces();
-		for(var dev in ifaces) {
+		var ip, ifaces = require('os').networkInterfaces();
+		for(var dev in ifaces){
 			ifaces[dev].forEach(function(details){
 				if(details.family == 'IPv4') {
 					//just use the first one i guess
@@ -197,7 +298,7 @@ if(NODE){
 		}
 		
 		var sockets = [];
-		var server = ex.listen(port,function(){
+		server.listen(port, function(){
 			V.success({
 				time: -1,
 				title: "Server started!",
@@ -214,20 +315,25 @@ if(NODE){
 			});
 		}).on("error",function(e){
 			if(e.code === "EADDRINUSE"){
-				V.error({
-					time:-1,
-					title:"Port "+port+" is in use.",
-					html:"Use a different port?<br>"
-						+"<input type=number step=1 value="+((Math.random()*65535)|0)+"><br>"
-						+"<button>Start server!</button>"
+				var $n = V.error({
+					time: -1,
+					title: "Port "+port+" is in use.",
+					html: "Use a different port?<br>"
+						+ "<input type=number step=1 value="+((Math.random()*65535)|0)+"><br>"
+						+ "<button>Start server!</button>"
 				});
+				$n.$("button").click(function(){
+					startServer(Number($n.$("input").val()));
+					$n.remove();
+				});
+				$n.$("input").select();
 			}else{
-				V.error.apply(null,arguments);
+				V.error(e);
 			}
 		});
 		
 		function stopServer(callback){
-			try {
+			try{
 				server.close(function () {
 					V.notify("Server stopped.");
 					callback && callback();
@@ -236,7 +342,7 @@ if(NODE){
 					socket.destroy();
 					//console.log("destroyed socket");
 				});
-			} catch(e) {
+			}catch(e){
 				if(callback){
 					callback(e);
 				}else{
@@ -247,14 +353,15 @@ if(NODE){
 		
 		window.stopServer = stopServer;
 		global.server = server;
-		global.server.TERMINATE = stopServer;
+		global.server.terminate = stopServer;
+		global.server.port = port;
 	};
 	
 	if(global.server){
-		global.server.TERMINATE(function(e){
+		global.server.terminate(function(e){
 			if(e)console.warn(e);
-			//This is a restart, restart the server as well.
-			startServer();
+			//This is a restart, so restart the server as well.
+			startServer(global.server.port);
 		});
 	}
 	

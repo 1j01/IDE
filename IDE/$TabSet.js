@@ -40,6 +40,33 @@ function $TabSet(){
 				return $tab.attr("title");
 			}
 		};
+		$tab.close = function(){
+			for(var i=0; i<tabs.length; i++){
+				if(tabs[i] === $tab){
+					if($tab.hasClass("active")){
+						if(i>0){
+							tabs[i-1].activate();
+						}else if(tabs[i+1]){
+							tabs[i+1].activate();
+						}
+					}
+					tabs.splice(i,1);
+					break;
+				}
+			}
+			$tabs = $tabs.not($tab);
+			$tab.$content.remove();
+			$tab.css({
+				"-webkit-transition": "-webkit-transform .2s ease-in-out, opacity .2s ease-in-out",
+				"-webkit-transform": "scale(0.8) translateY(30px)",
+				"opacity": 0,
+				"pointer-events": "none",
+				"z-index": 0
+			},function(){
+				$tab.remove();
+			});
+			order();
+		};
 		if(_file){
 			$tab.title(_file.name).ttip(_file.path);
 		}
@@ -60,6 +87,11 @@ function $TabSet(){
 		};
 		$tab.activate();
 		$tab.on("mousedown",function(e){
+			if(e.button === 1){
+				$tab.trigger("close");
+				return $tab.close();
+			}
+			
 			$tab.activate();
 			
 			order();

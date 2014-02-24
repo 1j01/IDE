@@ -17,7 +17,6 @@ app.open = function($ws, file){//file may be undefined
 		if($tab.CLOSED)return;
 		
 		var editor = ace.edit($tab.$content[0]);
-		E=editor;
 		
 		editor.setTheme("ace/theme/twilight");
 		editor.getSession().setUseSoftTabs(false);//(for f***'s sake)

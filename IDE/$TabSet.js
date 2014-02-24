@@ -65,6 +65,7 @@ function $TabSet(){
 			},function(){
 				$tab.remove();
 			});
+			calc_tab_width();
 			order();
 		};
 		if(_file){
@@ -87,6 +88,7 @@ function $TabSet(){
 		};
 		$tab.activate();
 		$tab.on("mousedown",function(e){
+			e.preventDefault();
 			if(e.button === 1){
 				$tab.trigger("close");
 				return $tab.close();

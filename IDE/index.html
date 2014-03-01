@@ -37,9 +37,16 @@
 				//let F12 open dev tools
 				$(function(){
 					$(window).on("keydown",function(e){
-						console.log("keydown",e.keyCode,e.char);
+						if(e.altKey){
+							console.log("keydown",e.keyCode);
+						}
 						if(e.keyCode === 123){
 							nw_win.showDevTools();
+							/*var $devtools = $("<iframe>").appendTo("body");
+							nw_win.on("devtools-opened", function(url) {
+							    $('#devtools').attr("src", url);
+							});
+							nw_win.showDevTools("", true);*/
 						}
 					});
 				})

@@ -15,16 +15,18 @@ if(nrequire){
 	mod_path = nrequire("path");
 }
 
+
+
 //these functions are garunteed to be called on a host NODE
 GETs = {
 	workspaces: function(callback){
-		callback(null,[{
+		callback(null, [{
 			name: "meta",
 			files: ["server.js", "index.html", "ide.js", "main.css"]
 		}]);
 	},
 	apps: function(callback){
-		fs.readdir("apps",callback);
+		fs.readdir("apps", callback);
 	}
 };
 POSTs = {
@@ -60,7 +62,7 @@ GET = function(thing, callback){
 			type: "GET",
 			success: function(data){
 				var res = JSON.parse(data);
-				callback(res.err, res.resobj);
+				callback(res[0], res[1]);
 			},
 			error: function(xhr,status,error){
 				V.error({title:status,message:error});
@@ -104,9 +106,9 @@ POST = function(action, data, callback){
 			data: JSON.stringify(data),
 			success: function(res){
 				res = JSON.parse(res);
-				callback(res.err, res.resobj);
+				callback(res[0], res[1]);
 			},
-			error: function(xhr,status,error){
+			error: function(xhr, status, error){
 				V.error({
 					title: status,
 					message: error
@@ -195,7 +197,7 @@ if(NODE){
 				res.writeHead(code, {
 					'Content-Type': "application/json"
 				});
-				res.write(JSON.stringify({resobj:content})+"\n");
+				res.write(JSON.stringify([undefined, content])+"\n");
 				res.end();
 			}
 			function RET_JSON(err, content){
@@ -206,14 +208,13 @@ if(NODE){
 				}
 			}
 			var pathname = URL.parse(req.url).pathname;
-			//if(pathname === "/"){}else{return V.debug(pathname);}
 			
 			var m;
 			if(pathname === "/"){
 				var fname = PATH.join(dir, 'index.html');
 				FS.createReadStream(fname).pipe(res);
 			}else if(pathname === "/apps/"){
-				// list workspaces
+				// list apps
 				GETs.apps(RET_JSON);
 			}else if(pathname === "/workspaces/"){
 				// list workspaces
@@ -262,32 +263,6 @@ if(NODE){
 				});
 			}
 		});
-		
-		/////////////////
-		/*for(var thing in GETs){
-			app.get("/"+thing,(function(cmdfun){
-				return function(req,res){
-					cmdfun(function(err,resobj){
-						res.send(JSON.stringify({err:err,resobj:resobj}));
-					});
-				};
-			})(GETs[thing]));
-		}
-		for(var action in POSTs){
-			app.post("/"+action,(function(cmdfun){
-				return function(req,res){
-					try {
-						//console.debug(action,req.body);
-						var data = req.body;//JSON.parse(req.body);
-						cmdfun(data,function(err,resobj){
-							res.send(JSON.stringify({err:err,resobj:resobj}));
-						});
-					}catch(e){
-						res.send(JSON.stringify({err:e.message}));
-					}
-				};
-			})(POSTs[action]));
-		}*/
 		
 		//find local ip
 		var ip, ifaces = require('os').networkInterfaces();

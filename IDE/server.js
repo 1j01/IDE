@@ -195,8 +195,15 @@ if(NODE){
 				res.writeHead(code, {
 					'Content-Type': "application/json"
 				});
-				res.write(JSON.stringify(content)+"\n");
+				res.write(JSON.stringify({resobj:content})+"\n");
 				res.end();
+			}
+			function RET_JSON(err, content){
+				if(err){
+					sendJSON(err.code || 500, content);
+				}else{
+					sendJSON(200, content);
+				}
 			}
 			var pathname = URL.parse(req.url).pathname;
 			//if(pathname === "/"){}else{return V.debug(pathname);}
@@ -207,14 +214,10 @@ if(NODE){
 				FS.createReadStream(fname).pipe(res);
 			}else if(pathname === "/apps/"){
 				// list workspaces
-				GETs.apps(function(apps){
-					sendJSON(200, apps);
-				});
+				GETs.apps(RET_JSON);
 			}else if(pathname === "/workspaces/"){
 				// list workspaces
-				GETs.workspaces(function(workspaces){
-					sendJSON(200, workspaces);
-				});
+				GETs.workspaces(RET_JSON);
 			}else if(m=pathname.match(/^\/workspaces\/(?:([^/])\/(.*))?/)){
 				var ws_name = m[1];
 				var path = m[2];

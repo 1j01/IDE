@@ -3,10 +3,12 @@ var modelist, themelist, Emmet;
 var _app = app.path;
 var _ace = "lib/ace/";
 
-app.open = function($ws, file){//file may be undefined
-	var $tab = new $ws.$Tab(file);
-	$tab.title(file.name);
-	$tab.ttip(file.path);
+//app.open = ({file, $tab, $area})->
+app.open = function(o){
+	//coffeescript makes this a lot nicer
+	var file = o.file;
+	var $tab = o.$tab;
+	var $area = o.$area;
 	
 	if(typeof ace !== "undefined"){
 		go();

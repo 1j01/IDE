@@ -35,7 +35,7 @@
 	$.fn.contextMenu = function(items){
 		if(items === "clipboard"){
 			if(typeof process === "undefined"){
-				return;//only needed in node-webkit
+				return;//clipboard items only needed in node-webkit
 			}
 			items = [
 				{text:"Cut", click:function(){

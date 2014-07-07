@@ -15,22 +15,22 @@
 	
 	var fb = new Firebase("https://experimental-ide.firebaseio.com/firepads");
 	var userID = Math.random();
-	//window._fb = fb;
 	
 	$.ajaxSetup({ cache: true });
 	$G = $(window);
 	
-	$activeWorkspace = null;
+	activeWorkspace = null;
 	$activeTab = null;
 	
-	GET("apps", function(err, app_names){
+	vhost = new VHost();
+	vhost.GET("apps", function(err, app_names){
 		if(err){
 			V.error({
 				title: "Failed to load the list of apps!!!!!! >:(",
 				message: err
 			});
 		}else{
-			console.log("Apps: "+app_names.join(", "));
+			console.log("Apps: ",app_names);
 			var n_apps = app_names.length;//Object.keys(apps).length;
 			var n_loaded = 0;
 			var n_failed = 0;
@@ -167,20 +167,20 @@
 		//extended sidebar width
 		var esbw = 200;
 
-		var $workspaces = $();
-		GET("workspaces", function(err, workspaces){
+		var workspaces = [];
+		vhost.GET("workspaces", function(err, workspace_defs){
 			if(err){
 				V.error(err);
 			}else{
-				if(workspaces.length === 0){
+				if(workspace_defs.length === 0){
 					$workspaces_list.html('Create a workspace to begin.<br/>Right click over here!<br/>');
 				}else{
 					$workspaces_list.empty();
-					$.map(workspaces,function(wsobj){
-						var $ws = new $Workspace(wsobj);
-						$workspaces.push($ws);
-						$ws.openAllFiles();
-						return $ws;
+					$.map(workspace_defs, function(ws_def){
+						var ws = new Workspace(ws_def);
+						workspaces.push(ws);
+						ws.openAllFiles();
+						return ws;
 					});
 				}
 			}
@@ -257,7 +257,7 @@
 		if(typeof nw_gui !== "undefined"){
 			nw_gui.App.on("open",function(cmdline){
 				V.success(cmdline,{title:"Command Line:"});
-				$activeWorkspace.openFile(cmdline);
+				activeWorkspace.openFile(cmdline);
 			});
 		}
 		
@@ -282,241 +282,9 @@
 				e.preventDefault();  
 				e.stopPropagation();
 				$.each(files,function(i,file){
-					$activeWorkspace.openFile(file);
+					activeWorkspace.openFile(file);
 				});
 			}
 		});
 	});
-
-	function $Workspace(ws_def){
-		var $handle = $("<div class='workspace-handle'/>");
-		$handle.text(name).on("click", function(){
-			$ws.toggle();
-			if($ws.is(":visible")){
-				$activeWorkspaace = $ws;
-				$activeTab = $ws.$activeTab;
-			}
-		});
-		
-		var $ws = new $TabSet();
-		$ws.addClass('workspace');
-		$activeWorkspace = $ws;
-		
-		$ws.name = ws_def.name;
-		$ws.files = ws_def.files;
-		
-		$ws.openAllFiles = function(_app){
-			$.each($ws.files,function(i,file){
-				$ws.openFile(file, _app);
-			});
-		};
-		
-		$ws.openFile = function(file, _app){
-			if(!(file instanceof rFile)){
-				file = new rFile(file);
-			}
-			
-			if($(apps).data("loaded")){
-				go();
-			}else{
-				$(apps).on("loaded",go);
-			}
-			
-			function go(){
-				var done = false;
-				
-				if(_app){
-					return open_with(_app);
-				}
-				
-				//uhhhhhhhhhhhh......... @TODO
-				if(options.mimes instanceof Object){
-					var pref = options.mimes[file.type];
-					if(pref){
-						if(apps[pref]){
-							return open_with(file, apps[pref]);
-						}else{
-							V.warn("Preference "+pref+" isn't installed.");
-						}
-					}
-				}
-				$.each(["edit","view"],function(i, method){
-					var ext = file.path.match(/\..*/);
-					if(ext){
-						ext = ext[0];
-						$.each(apps,function(an, app){
-							if(!app[method]){
-								return true;//continue;
-							}
-							if(~app[method].indexOf(("*"+ext).toLowerCase())){
-								open_with(app);
-								return false;
-							}
-						});
-					}
-					if(done)return;
-					//assume file is code :O
-					$.each(apps,function(an, app){
-						if(!app[method]){
-							return true;//continue;
-						}
-						if(~app.edit.indexOf("code")){
-							open_with(app);
-							return false;
-						}
-					});
-					if(done)return;
-				});
-				if(done)return;
-				V.error("Couldn't find an app to open "+file.name);
-				
-				
-				function open_with(app){
-					//app can be an app object or the dirname of an app
-					if(!app){
-						V.error({
-							title: "I tried to open "+file.name+" with... nothing?",
-							message: "I'm confused. :("
-						});
-					}
-					if(!app.open){
-						if(typeof app === "string"){
-							if(!apps[app]){
-								V.error({
-									title: "I tried to open "+file.name+" with... "+app,
-									message: app+" doesn't seem to exist?"
-								});
-							}
-							app = apps[app];
-						}else{
-							V.error({
-								title: "I tried to open "+file.name+" with... "+app,
-								message: "It didn't work so well. :("
-							});
-						}
-					}
-					app.open($ws, file);
-					done = true;
-				}
-			}
-		};
-		
-		//add self to the page
-		$("#workspaces-list").append($handle);
-		$("#workspaces").append($ws);
-		
-		return $ws;
-	}
-
-	//"Real File"
-	function rFile(relative_path_or_File){
-		var f = this;
-		
-		if(relative_path_or_File instanceof File){
-			var aFile = relative_path_or_File;
-			f.path = relative_path_or_File.path;
-			f.name = relative_path_or_File.name;
-			if(NODE){
-				f.relative_path = mod_path.relative(process.cwd(),f.path);
-			}else{
-				f.path = "?";
-				f.relative_path = "?";
-				f.content = "@TODO: readonly local file access?";
-				f.__READ_TIME__ = Date.now() + 60*1000;
-			}
-		}else{
-			var rel_path = relative_path_or_File;
-			f.relative_path = rel_path;
-			f.path = mod_path ? mod_path.resolve(rel_path) : (location.href.replace(/index.html$/, "")+rel_path);
-			f.name = rel_path.replace(/^.*\//,"");
-		}
-		
-		
-		f.toString = function(){
-			return "<"+f.path+">";
-		};
-		
-		//f.__READING__ = false;
-		POST("read",{path:f.relative_path},function(err, content){
-			if(err){
-				V.error({
-					title: "Failed to read file:",
-					text: f.path
-				});
-				console.error(err);
-			}else{
-				f.content = content;
-				f.__READ_TIME__ = Date.now();
-				console.log("auto read file "+f.path);
-			}
-			$(f).trigger("read", [err, content]);
-		});
-		
-		f.read = function(callback){
-			//f.__READING__ = true;
-			if(f.content === undefined){
-				$(f).on("read",function(e, err, content){
-					//console.debug(e,err,content);
-					callback && callback(err, content);
-				});
-			}else{
-				var secondsSinceRead = (Date.now() - f.__READ_TIME__)/1000;
-				if(secondsSinceRead < 10){
-					callback && callback(f.content);
-				}else{
-					V.debug("re-reading file "+f.name);
-					POST("read",{path:f.relative_path},function(err, content){
-						if(err){
-							V.error({
-								title: "Failed to (re)read file:",
-								text: f.path
-							});
-							console.error(err);
-						}else{
-							f.__READ_TIME__ = new Date();
-							f.content = content;
-							$(f).trigger("read",[err, f.content]);
-						}
-					});
-				}
-			}
-		};
-		f.write = function(content, callback){
-			//save to disk and apply/execute changes without 
-			f.live(content);
-			POST("write",{
-				path: f.relative_path,
-				content: content
-			},function(err, content){
-				if(err){
-					V.error({
-						title: "Failed to write file "+f.path,
-						message: (err.message||err)
-					});
-				}else{
-					V.success("Saved file "+f.path,{t:2000});
-				}
-				callback && callback(err, content);
-			});
-		};
-		f.live = function(content){
-			//apply/execute changes without saving to disk
-			$("link[rel=stylesheet][href]").each(function(){
-				var $link = $(this);
-				if($link.prop("href") === f.name){
-					$link.prop('disabled',true);
-					var id = "edit-"+f.name.replace(/\W/g,"-");
-					var $style = $("style#"+id);
-					if($style.length === 0){
-						$style = $("<style id='"+id+"'>").appendTo("head");
-					}
-					$style.text(content);
-					//$link.text(content);
-					console.log("live editting "+f.path+" like a boss");
-				}
-			});
-		};
-	}
-	
-	
 })();

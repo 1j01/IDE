@@ -2,9 +2,9 @@
 This module does not use flexbox, and thus can be used in less edgy projects.
 It does however rely on $().push defined in utils.js
 (and the styles in tabs.css)
-(and it sets a global $activeTab)
+(also it sets a global variable $activeTab)
 */
-function $TabSet(){
+function TabSet(){
 	var $tabset = $("<div class='tabset'/>");
 	var $tabstrip = $("<section class='tabstrip'/>").appendTo($tabset);
 	var $contents = $("<section class='tabset-contents'/>").appendTo($tabset);
@@ -17,9 +17,9 @@ function $TabSet(){
 	var max_tab_width = 150;
 	var tab_margin = 6;
 	
-	$tabset.$activeTab = null;
+	this.$activeTab = null;
 	
-	$tabset.$Tab = function $Tab(_file){
+	this.$Tab = function $Tab(_file){
 		var $tab = $("<div class='tab-handle'/>").appendTo($tabstrip);
 		var $tabtitle = $("<span class='tab-text'/>").appendTo($tab);
 		$tab.$content = $("<div class='tab-content'/>").appendTo($contents).hide();
@@ -160,7 +160,6 @@ function $TabSet(){
 		},10);
 	});
 	$tabset.on("resize-animation", function resize(e, new_ts_width, speed){
-		
 		calc_tab_width();
 		var new_tab_width = Math.min(new_ts_width/$tabs.length - tab_margin, max_tab_width);
 		$tabs.addClass("resizing");
@@ -168,10 +167,11 @@ function $TabSet(){
 			tabs[i].animate({
 				left: tabs[i].xto = new_tab_width*i + tab_margin,
 				width: new_tab_width - tab_margin
-			}, speed, function(){
-				$tabs.removeClass("resizing");
-				order();
-			});
+			}, speed, done);
+		}
+		function done(){
+			$tabs.removeClass("resizing");
+			order();
 		}
 	});
 	

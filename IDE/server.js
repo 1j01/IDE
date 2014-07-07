@@ -15,7 +15,64 @@ if(nrequire){
 	mod_path = nrequire("path");
 }
 
-
+function VHost(REMOTE_SERVER){
+	this.REMOTE_SERVER = REMOTE_SERVER;
+}
+$.each(["GET","PUT","POST","DELETE"], function(i, METHOD){
+	VHost.prototype[METHOD] = function(){
+		var callback = function(){
+			V.error("No callback specified");
+		};
+		var data = void 0;
+		var path = "ERROR/FAIL/UM";
+		for(var i=0; i<arguments.length; i++){
+			var a = arguments[i];
+			if(typeof a === "function"){
+				callback = a;
+			}else if(typeof a === "string"){
+				path = a;
+			}else if(typeof a === "object"){
+				data = a;
+			}
+		}
+		if(this.REMOTE_SERVER){
+			//remote access
+			$.ajax({
+				url: "http://"+this.REMOTE_SERVER+"/"+path+"/",
+				dataType: "text",
+				contentType: "application/json",
+				type: METHOD,
+				success: function(data){
+					var res = JSON.parse(data);
+					callback(res[0], res[1]);
+				},
+				error: function(xhr, status, error){
+					V.error({title:status, message:error});
+					callback(error);
+				}
+			});
+		}else if(NODE){
+			//direct access
+			try{
+				var cmdfun = GETs[path];
+				cmdfun(callback);
+			}catch(err){
+				console.error("err within DIRECT "+METHOD+" "+path+": ", err.message);
+				callback(err);
+			}
+		}else{
+			//dummy access
+			if(path === "workspaces"){
+				callback(null, [{
+					name: "Dummy Meta",
+					files: ["../README.md", "server.js", "index.html", "ide.js", "main.css"]
+				}]);
+			}else if(path === "apps"){
+				callback(null, ["ace", "codemirror", "textarea", "firepad"]);
+			}
+		}
+	};
+});
 
 //these functions are garunteed to be called on a host NODE
 GETs = {
@@ -29,68 +86,8 @@ GETs = {
 		fs.readdir("apps", callback);
 	}
 };
-POSTs = {
-	write: function(param, callback){
-		//return callback("Save disabled! :)");
-		fs.writeFile(param.path, param.content, function(err){
-			if(err){
-				callback("Failed to write "+param.path);
-			}else{
-				callback(null,"File written.");
-			}
-		});
-	},
-	read: function(param, callback){
-		var path = mod_path.resolve(param.path);
-		fs.readFile(path, function(err, content){
-			if(err){
-				callback("Failed to read "+param.path);
-			}else{
-				callback(null,content+"");
-			}
-		});
-	}
-};
 
-GET = function(thing, callback){
-	if(REMOTE_SERVER){
-		//remote access
-		$.ajax({
-			url: "http://"+REMOTE_SERVER+"/"+thing+"/",
-			dataType: "text",
-			contentType: "application/json",
-			type: "GET",
-			success: function(data){
-				var res = JSON.parse(data);
-				callback(res[0], res[1]);
-			},
-			error: function(xhr,status,error){
-				V.error({title:status,message:error});
-				callback(error);
-			}
-		});
-	}else if(NODE){
-		//direct access
-		try{
-			var cmdfun = GETs[thing];
-			cmdfun(callback);
-		}catch(err){
-			console.error("@GET "+thing+"(): ",err.message);
-			callback(err);
-		}
-	}else{
-		//dummy access
-		if(thing === "workspaces"){
-			callback(null, [{
-				name: "Dummy Meta",
-				files: ["../README.md", "server.js", "index.html", "ide.js", "main.css"]
-			}]);
-		}else if(thing === "apps"){
-			callback(null, ["ace", "codemirror", "textarea", "firepad"]);
-		}
-	}
-};
-
+/*
 POST = function(action, data, callback){
 	if(!$.isPlainObject(data)){
 		V.warn("Not a plain object: "+data+"\n(see console)");
@@ -148,7 +145,7 @@ POST = function(action, data, callback){
 		}
 	}
 };
-
+*/
 
 if(NODE){
 	
@@ -200,11 +197,17 @@ if(NODE){
 				res.write(JSON.stringify([undefined, content])+"\n");
 				res.end();
 			}
-			function RET_JSON(err, content){
-				if(err){
-					sendJSON(err.code || 500, content);
+			function U_WANT_SOME_JSON_BRO(stuff_wanted){
+				if(req.method === "GET"){
+					GETs[stuff_wanted](function(err, content){
+						if(err){
+							sendJSON(err.code || 500, content);
+						}else{
+							sendJSON(200, content);
+						}
+					});
 				}else{
-					sendJSON(200, content);
+					sendJSON(400, req.method+" not supported. You can only GET "+stuff_wanted);
 				}
 			}
 			var pathname = URL.parse(req.url).pathname;
@@ -214,15 +217,15 @@ if(NODE){
 				var fname = PATH.join(dir, 'index.html');
 				FS.createReadStream(fname).pipe(res);
 			}else if(pathname === "/apps/"){
-				// list apps
+				U_WANT_SOME_JSON_BRO("apps");
 				GETs.apps(RET_JSON);
 			}else if(pathname === "/workspaces/"){
-				// list workspaces
-				GETs.workspaces(RET_JSON);
+				U_WANT_SOME_JSON_BRO("workspaces");
 			}else if(m=pathname.match(/^\/workspaces\/(?:([^/])\/(.*))?/)){
+				//@TODO: any security at all?
 				var ws_name = m[1];
 				var path = m[2];
-				console.log("ACCESS WS.",m);
+				V.info("ACCESS WS "+ws_name+", path="+path);
 				
 				var ws = workspaces[ws_name];
 				if(!ws){
@@ -235,24 +238,22 @@ if(NODE){
 				var filename = PATH.join(dir, pathname);
 				FS.lstat(filename, function(err, stats){
 					if(err){
-						send(404, err.code);
+						send(404, err.code+err.message);
 					}else{
 						if(stats.isFile()){
 							// path exists, is a file
-							var mimeType = mime_types[PATH.extname(filename)];
+							var mimeType = mime_types[PATH.extname(filename)] || "application/octet-stream";
 							res.writeHead(200, {
 								'Content-Type': mimeType
-									// "here is a bunch of bytes, hopefully there is an application over on your end which knows what to do with them"
-									|| "application/octet-stream"
 							});
 							
 							FS.createReadStream(filename).pipe(res);
 						}else if(stats.isDirectory()){
 							// path exists, is a directory
 							if(req.method === "GET"){
-								send(200, "that's a dir");
+								send(200, "That's a directory. What, do you want a listing or something?");
 							}else{
-								send(505, "uh, "+req.method+"?");
+								send(505, req.method+" is not supported on directories.");
 							}
 						}else{
 							// Symbolic link, other?
